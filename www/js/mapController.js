@@ -241,7 +241,20 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
             }
         }).then(function successCallback(response) {
 
-            var wkt = response.data[0].coordenadas;
+            districtLayer = new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: service,
+                    params: {
+                        'LAYERS': 'solicitudes_col',
+                        'VERSION': '1.1.1',
+                        'FORMAT': 'image/png',
+                        'TILED': true
+                    }
+                })
+            });
+//            map.addLayer(districtLayer);
+
+            wkt = response.data[0].coordenadas;
 
             var format = new ol.format.WKT();
 
@@ -267,7 +280,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
             var olMapDiv = document.getElementById('olmap');
             var map = new ol.Map({
-                layers: [vector],
+                layers: [vector, districtLayer],
                 interactions: ol.interaction.defaults({
                     altShiftDragRotate: false,
                     dragPan: false,
@@ -304,8 +317,9 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
             target: olMapDiv,
             view: view
         });
-        view.setCenter(['6.25468647083332', '-74.5981636036184']);
-        view.setZoom(7);
+
+        gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
+        gmap.setZoom(7);
 
         olMapDiv.parentNode.removeChild(olMapDiv);
         gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
