@@ -8,9 +8,6 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     $route.reload();
     $templateCache.removeAll();
 
-
-
-
     var source = new ol.source.Vector();
 
     var gmap = new google.maps.Map(document.getElementById('gmap'), {
@@ -29,17 +26,17 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     $scope.centroIcono = 'icon ion-plus';
 
 
-    //vector de dibujo
-//    var vector = new ol.layer.Vector({
-//        name: 'my_vectorlayer',
-//        source: source,
-//        style: new ol.style.Style({
-//            stroke: new ol.style.Stroke({
-//                color: '#ffcc33',
-//                width: 1
-//            })
-//        })
-//    });
+//    vector de dibujo
+    var vectorDibujo = new ol.layer.Vector({
+        name: 'my_vectorlayer',
+        source: source,
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#ffcc33',
+                width: 1
+            })
+        })
+    });
 
 //se dibuja el radio
     if ($stateParams.placa == '0') {
@@ -274,21 +271,22 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                     }),
                     text: new ol.style.Text({
                         text: response.data[0].placa,
-                        scale: 1.3,
+                        scale: 1.8,
                         fill: new ol.style.Fill({
                             color: 'black'
                         }),
                         stroke: new ol.style.Stroke({
                             color: 'white',
-                            width: 3
+                            width: 2
                         })
                     })
                 })
             });
 
-
+            var extent = feature.getGeometry().getExtent();
+            console.log(extent);
             map = new ol.Map({
-                layers: [vector],
+                layers: [vector, vectorDibujo],
                 interactions: ol.interaction.defaults({
                     altShiftDragRotate: false,
                     dragPan: false,
@@ -298,8 +296,10 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 view: view
             });
 
-            gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
-            gmap.setZoom(7);
+            map.getView().fit(extent,map.getSize());
+            
+//            gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
+//            gmap.setZoom(7);
 
 
             olMapDiv.parentNode.removeChild(olMapDiv);
@@ -312,7 +312,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     } else {
 
         map = new ol.Map({
-            layers: [vector],
+            layers: [vector, vectorDibujo],
             interactions: ol.interaction.defaults({
                 altShiftDragRotate: false,
                 dragPan: false,
