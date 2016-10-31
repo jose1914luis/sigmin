@@ -9,6 +9,8 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     $templateCache.removeAll();
 
 
+
+
     var source = new ol.source.Vector();
 
     var gmap = new google.maps.Map(document.getElementById('gmap'), {
@@ -230,6 +232,13 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         gmap.setZoom(view.getZoom());
     });
 
+    var olMapDiv = document.getElementById('olmap');
+
+    var vector = new ol.layer.Vector({
+    });
+
+
+
     if ($stateParams.placa != undefined && $stateParams.placa != "") {
 
         $http({
@@ -241,19 +250,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
             }
         }).then(function successCallback(response) {
 
-            districtLayer = new ol.layer.Tile({
-                source: new ol.source.TileWMS({
-                    url: service,
-                    params: {
-                        'LAYERS': 'solicitudes_col',
-                        'VERSION': '1.1.1',
-                        'FORMAT': 'image/png',
-                        'TILED': true
-                    }
-                })
-            });
-//            map.addLayer(districtLayer);
-
+            console.log(response.data[0]);
             wkt = response.data[0].coordenadas;
 
             var format = new ol.format.WKT();
@@ -263,24 +260,35 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 featureProjection: 'EPSG:3857'
             });
 
-            var vector = new ol.layer.Vector({
+            vector = new ol.layer.Vector({
                 source: new ol.source.Vector({
                     features: [feature]
                 }),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(255, 255, 255, 0.6)'
+                        color: 'rgba(255, 0, 0, 0.2)'
                     }),
                     stroke: new ol.style.Stroke({
-                        color: '#319FD3',
-                        width: 1
+                        color: '#ef473a',
+                        width: 3
+                    }),
+                    text: new ol.style.Text({
+                        text: response.data[0].placa,
+                        scale: 1.3,
+                        fill: new ol.style.Fill({
+                            color: 'black'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: 'white',
+                            width: 3
+                        })
                     })
                 })
             });
 
-            var olMapDiv = document.getElementById('olmap');
-            var map = new ol.Map({
-                layers: [vector, districtLayer],
+
+            map = new ol.Map({
+                layers: [vector],
                 interactions: ol.interaction.defaults({
                     altShiftDragRotate: false,
                     dragPan: false,
@@ -289,11 +297,11 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 target: olMapDiv,
                 view: view
             });
-//            view.setCenter(['0', '0']);
-//            view.setZoom(7);
 
             gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
             gmap.setZoom(7);
+
+
             olMapDiv.parentNode.removeChild(olMapDiv);
             gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
 
@@ -303,11 +311,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         });
     } else {
 
-        var vector = new ol.layer.Vector({
-        });
-
-        var olMapDiv = document.getElementById('olmap');
-        var map = new ol.Map({
+        map = new ol.Map({
             layers: [vector],
             interactions: ol.interaction.defaults({
                 altShiftDragRotate: false,
