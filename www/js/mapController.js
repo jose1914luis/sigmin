@@ -3,7 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $scope, $location, $state, $stateParams, $route, $templateCache, $http) {
+angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $ionicHistory, $scope, $location, $state, $stateParams, $route, $templateCache, $http) {
+
+    $ionicHistory.clearCache();
+    $ionicHistory.nextViewOptions({
+        disableBack: true
+    });
 
     $route.reload();
     $templateCache.removeAll();
@@ -290,14 +295,25 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 interactions: ol.interaction.defaults({
                     altShiftDragRotate: false,
                     dragPan: false,
-                    rotate: false
+                    rotate: false,
+                    doubleClickZoom: false
                 }).extend([new ol.interaction.DragPan({kinetic: null})]),
                 target: olMapDiv,
                 view: view
             });
 
-            map.getView().fit(extent,map.getSize());
-            
+            map.getView().fit(extent, map.getSize());
+
+            map.on('dblclick', function (evt) {
+                console.log('doubled');
+                var feature = map.forEachFeatureAtPixel(evt.pixel,
+                        function (feature, layer) {
+                            
+                            // si entra aqui es por que tiene datos para mostrar
+                            $state.go('app.playlists', {placa: item}, {reload: true});
+                        });                        
+            });
+
 //            gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
 //            gmap.setZoom(7);
 
