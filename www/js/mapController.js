@@ -202,39 +202,10 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     var olMapDiv = document.getElementById('olmap');
     var vector = new ol.layer.Vector({
     });
-    
+
     var vectorPunto = new ol.layer.Vector();
-    
-    if ($stateParams.radio != undefined && $stateParams.radio != "" && $stateParams.coorX != undefined && $stateParams.coorX != "" && $stateParams.coorY != undefined && $stateParams.coorY != "") {
-        
-        var circle = new ol.geom.Circle(ol.proj.transform([parseFloat($stateParams.coorX), parseFloat($stateParams.coorY)], 'EPSG:4326', 'EPSG:3857'), parseInt($stateParams.radio));
-
-        var CircleFeature = new ol.Feature(circle);
 
 
-        var vectorSource = new ol.source.Vector({
-           dataProjection: 'EPSG:4326',
-           featureProjection: 'EPSG:3857'
-        });
-
-        vectorSource.addFeatures([CircleFeature]);
-
-
-        vectorPunto = new ol.layer.Vector({
-            source: vectorSource,
-            style: [
-                new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: 'blue',
-                        width: 3
-                    }),
-                    fill: new ol.style.Fill({
-                        color: 'rgba(0, 0, 255, 0.1)'
-                    })
-                })]
-        });
-
-    }
 
 
     if ($stateParams.placa != undefined && $stateParams.placa != "") {
@@ -331,6 +302,79 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
             alert('Error de comunicacion, consulte su WebMaster');
         });
+    } else if ($stateParams.zona != '0' && $stateParams.radio != undefined && $stateParams.radio != "" && $stateParams.coorX != undefined && $stateParams.coorX != "" && $stateParams.coorY != undefined && $stateParams.coorY != "") {
+
+        console.log('mbl_coords' + '=point(' + $stateParams.coorX + ' ' + $stateParams.coorY + ')' + '&mbl_origen= ' + String($stateParams.zona));
+        $http({
+            method: 'GET',
+            url: 'http://192.168.0.10/finderaccount/Services/sgm_service_point.php',
+            params: {'mbl_coords': 'point(' + $stateParams.coorX + ' ' + $stateParams.coorY + ')', 'mbl_origen': String($stateParams.zona)},
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(function successCallback(response) {
+//           
+
+            var puntos = String(response.data.coordenada);
+            puntos = puntos.replace("POINT(", "");
+            puntos = puntos.replace(")", "");
+            var puntox = puntos.split(" ")[0];
+            var puntoy = puntos.split(" ")[1];
+            console.log(puntox);
+            console.log(puntoy);
+
+
+            var circle = new ol.geom.Circle(ol.proj.transform([parseFloat(puntox), parseFloat(puntoy)], 'EPSG:4326', 'EPSG:3857'), parseInt($stateParams.radio));
+
+            var CircleFeature = new ol.Feature(circle);
+
+
+            var vectorSource = new ol.source.Vector({
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+
+            vectorSource.addFeatures([CircleFeature]);
+
+
+            vectorPunto = new ol.layer.Vector({
+                source: vectorSource,
+                style: [
+                    new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'blue',
+                            width: 3
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0, 0, 255, 0.1)'
+                        }),
+                        radius: 5
+                    })]
+            });
+
+            map = new ol.Map({
+                layers: [vector, vectorDibujo, vectorPunto],
+                interactions: ol.interaction.defaults({
+                    altShiftDragRotate: false,
+                    dragPan: false,
+                    rotate: false
+                }).extend([new ol.interaction.DragPan({kinetic: null})]),
+                target: olMapDiv,
+                view: view
+            });
+            gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
+            gmap.setZoom(7);
+            olMapDiv.parentNode.removeChild(olMapDiv);
+            gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+
+
+        }, function errorCallback(response) {
+
+            alert('Error de comunicacion, consulte su WebMaster');
+        });
+
+
+
     } else {
 
         map = new ol.Map({
