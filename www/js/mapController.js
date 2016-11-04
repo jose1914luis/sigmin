@@ -5,24 +5,35 @@
  */
 angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $ionicHistory, $scope, $location, $state, $stateParams, $route, $templateCache, $http) {
 
-    $ionicHistory.clearCache();
+    //$ionicHistory.clearCache();
 
     $route.reload();
     $templateCache.removeAll();
+
+
+//    console.log($state);
+
     var source = new ol.source.Vector();
     var gmap = new google.maps.Map(document.getElementById('gmap'), {
         disableDefaultUI: true,
         keyboardShortcuts: false,
-        draggable: false,
-        disableDoubleClickZoom: true,
-        scrollwheel: false,
+        draggable: true,
+        disableDoubleClickZoom: false,
+        scrollwheel: true,
         streetViewControl: false,
         mapTypeId: google.maps.MapTypeId.SATELLITE
     });
-    $scope.icono_5 = 'icon ion-map';
-    $scope.icono_4 = 'icon ion-ios-crop-strong';
-    $scope.icono_3 = 'icon ion-ios-location';
-    $scope.centroIcono = 'icon ion-plus';
+
+    var iniciarBotones = function () {
+        $scope.icono_5 = 'icon ion-map';
+        $scope.icono_4 = 'icon ion-ios-crop-strong';
+        $scope.icono_3 = 'icon ion-ios-location';
+        $scope.centroIcono = 'icon ion-plus';
+        $scope.mostrar2 = false;
+        $scope.mostrar = false;
+        menu = 1;
+    };
+    iniciarBotones();
 //    vector de dibujo
     var vectorDibujo = new ol.layer.Vector({
         name: 'my_vectorlayer',
@@ -40,6 +51,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
         $state.go('app.browse');
     };
+
     function addInteraction() {
 
         draw = new ol.interaction.Draw({
@@ -65,6 +77,8 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         } else if (menu == 2) {
 
             $state.go('app.search');
+            iniciarBotones();
+
         } else if (menu == 3) {
 
             if (zonas_exc == null) {
@@ -165,8 +179,8 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
             }
         } else if (menu == 3) {
 
-            if (districtLayer == null) {
-                districtLayer = new ol.layer.Tile({
+            if (distLayer == null) {
+                distLayer = new ol.layer.Tile({
                     source: new ol.source.TileWMS({
                         url: service,
                         params: {
@@ -177,11 +191,11 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                         }
                     })
                 });
-                map.addLayer(districtLayer);
+                map.addLayer(distLayer);
             } else {
 
-                map.removeLayer(districtLayer);
-                districtLayer = null;
+                map.removeLayer(distLayer);
+                distLayer = null;
             }
 
         }
@@ -198,6 +212,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     });
     view.on('change:resolution', function () {
         gmap.setZoom(view.getZoom());
+        console.log('entro');
     });
     var olMapDiv = document.getElementById('olmap');
     var vector = new ol.layer.Vector({
@@ -205,8 +220,19 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
     var vectorPunto = new ol.layer.Vector();
 
+    var instanciarMapa = function () {
+        map = new ol.Map({
+            layers: [vector, vectorDibujo, vectorPunto],
+            target: olMapDiv,
+            view: view
+        });
+    };
 
+    var reinsertarMapa = function () {
 
+        olMapDiv.parentNode.removeChild(olMapDiv);
+        gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+    };
 
     if ($stateParams.placa != undefined && $stateParams.placa != "") {
 
@@ -253,17 +279,8 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
             });
             var extent = feature.getGeometry().getExtent();
 //            console.log(extent);
-            map = new ol.Map({
-                layers: [vector, vectorDibujo, vectorPunto],
-                interactions: ol.interaction.defaults({
-                    altShiftDragRotate: false,
-                    dragPan: false,
-                    rotate: false,
-                    doubleClickZoom: false
-                }).extend([new ol.interaction.DragPan({kinetic: null})]),
-                target: olMapDiv,
-                view: view
-            });
+            instanciarMapa();
+
             map.getView().fit(extent, map.getSize());
             map.on('dblclick', function (evt) {
                 console.log('doubled');
@@ -292,19 +309,15 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                             );
                         });
             });
-//            gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
-//            gmap.setZoom(7);
 
 
-            olMapDiv.parentNode.removeChild(olMapDiv);
-            gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+            reinsertarMapa();
         }, function errorCallback(response) {
 
             alert('Error de comunicacion, consulte su WebMaster');
         });
     } else if ($stateParams.zona != '0' && $stateParams.radio != undefined && $stateParams.radio != "" && $stateParams.coorX != undefined && $stateParams.coorX != "" && $stateParams.coorY != undefined && $stateParams.coorY != "") {
 
-        console.log('mbl_coords' + '=point(' + $stateParams.coorX + ' ' + $stateParams.coorY + ')' + '&mbl_origen= ' + String($stateParams.zona));
         $http({
             method: 'GET',
             url: 'http://192.168.0.10/finderaccount/Services/sgm_service_point.php',
@@ -313,16 +326,12 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(function successCallback(response) {
-//           
 
             var puntos = String(response.data.coordenada);
             puntos = puntos.replace("POINT(", "");
             puntos = puntos.replace(")", "");
             var puntox = puntos.split(" ")[0];
             var puntoy = puntos.split(" ")[1];
-            console.log(puntox);
-            console.log(puntoy);
-
 
             var circle = new ol.geom.Circle(ol.proj.transform([parseFloat(puntox), parseFloat(puntoy)], 'EPSG:4326', 'EPSG:3857'), parseInt($stateParams.radio));
 
@@ -336,6 +345,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
             vectorSource.addFeatures([CircleFeature]);
 
+            var extent = CircleFeature.getGeometry().getExtent();
 
             vectorPunto = new ol.layer.Vector({
                 source: vectorSource,
@@ -352,20 +362,11 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                     })]
             });
 
-            map = new ol.Map({
-                layers: [vector, vectorDibujo, vectorPunto],
-                interactions: ol.interaction.defaults({
-                    altShiftDragRotate: false,
-                    dragPan: false,
-                    rotate: false
-                }).extend([new ol.interaction.DragPan({kinetic: null})]),
-                target: olMapDiv,
-                view: view
-            });
-            gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
-            gmap.setZoom(7);
-            olMapDiv.parentNode.removeChild(olMapDiv);
-            gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+            instanciarMapa();
+
+            map.getView().fit(extent, map.getSize());
+
+            reinsertarMapa();
 
 
         }, function errorCallback(response) {
@@ -377,20 +378,12 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
     } else {
 
-        map = new ol.Map({
-            layers: [vector, vectorDibujo, vectorPunto],
-            interactions: ol.interaction.defaults({
-                altShiftDragRotate: false,
-                dragPan: false,
-                rotate: false
-            }).extend([new ol.interaction.DragPan({kinetic: null})]),
-            target: olMapDiv,
-            view: view
-        });
+        instanciarMapa();
+
         gmap.setCenter(new google.maps.LatLng('6.25468647083332', '-74.5981636036184'));
         gmap.setZoom(7);
-        olMapDiv.parentNode.removeChild(olMapDiv);
-        gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+
+        reinsertarMapa();
     }
 
 });
