@@ -1,0 +1,35 @@
+<ion-view view-title="Search">
+    <ion-content>
+        <label class="item item-input item-select">
+            <div class="input-label">
+                Coordenadas
+            </div>
+            <select name="selectZone" ng-model="data.selectZone"  ng-init="data.selectZone = '0'" >
+                <option value="0" selected="selected">Seleccione
+                </option><option value="WGS84">WGS84
+                </option><option value="BOGOTA">Colombia Bogota Zone
+                </option><option value="ESTE-CENTRAL">Colombia E Central Zone
+                </option><option value="ESTE-ESTE">Colombia East Zone
+                </option><option value="OESTE">Colombia West Zone
+            </select>
+        </label>
+
+        <label class="item item-input">
+            <span class="input-label">Coor. X</span>
+            <input type="text" name="coorX" id="coorX" ng-model="coorX">
+        </label>
+        <label class="item item-input">
+            <span class="input-label">Coor. Y</span>
+            <input type="text" name="coorY" id="coorY" ng-model="coorY">
+        </label>
+        <label class="item item-input">
+            <span class="input-label">Radio(m)</span>
+            <input type="text" name="radio" id="radio" ng-model="radio">
+        </label>
+        
+        <button class="button button-positive" ng-click="ubicarCoor(coorX, coorY, radio, data.selectZone)">
+            Ubicar Coor.
+        </button>
+
+    </ion-content>
+</ion-view>

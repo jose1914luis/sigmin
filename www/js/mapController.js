@@ -1,17 +1,28 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $ionicHistory, $scope, $location, $state, $stateParams, $route, $templateCache, $http) {
+/* global google, ol, map, service */
 
-    //$ionicHistory.clearCache();
+angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $ionicHistory, $scope, $location, $state, $stateParams, $route, $templateCache, $http, $ionicPopup) {
 
+    var state = 'INIT';
+
+    var menu = 1;
+    var service = "http://www.sigmin.co:8080/geoserver/CMQ/wms";
+    var zonas_exc = null;
+    var titulos = null;
+    var btn4_bol = true;
+    var distLayer = null;
+    var MAPA = 'SATELLITE';
+    var typoStr = '';
+    var draw = null;
+    var wkt = 'MULTIPOLYGON EMPTY';
+    var map = null;
+    
     $route.reload();
     $templateCache.removeAll();
-
-
-//    console.log($state);
 
     var source = new ol.source.Vector();
     var gmap = new google.maps.Map(document.getElementById('gmap'), {
@@ -33,6 +44,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         $scope.mostrar = false;
         menu = 1;
     };
+
     iniciarBotones();
 //    vector de dibujo
     var vectorDibujo = new ol.layer.Vector({
@@ -106,8 +118,8 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         if (menu == 1) {
             $scope.mostrar2 = false;
             $scope.icono_5 = 'icon ion-android-map';
-            $scope.icono_4 = 'icon ion-ios-navigate';
-            $scope.icono_3 = 'icon ion-android-hand';
+            $scope.icono_4 = 'ion-ios-circle-filled';
+            $scope.icono_3 = 'ion-pin';
             $scope.centroIcono = 'icon ion-ios-location';
             menu = 2;
         } else if (menu == 3) {
@@ -126,6 +138,8 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                     })
                 });
                 map.addLayer(titulos);
+
+
             } else {
                 map.removeLayer(titulos);
                 titulos = null;
@@ -212,7 +226,6 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     });
     view.on('change:resolution', function () {
         gmap.setZoom(view.getZoom());
-        console.log('entro');
     });
     var olMapDiv = document.getElementById('olmap');
     var vector = new ol.layer.Vector({
@@ -223,8 +236,38 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     var instanciarMapa = function () {
         map = new ol.Map({
             layers: [vector, vectorDibujo, vectorPunto],
+            interactions: ol.interaction.defaults({doubleClickZoom: false}),
             target: olMapDiv,
             view: view
+        });
+
+        map.on('dblclick', function (evt) {
+
+            var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+            var point = 'point(' + lonlat[0] + ' ' + lonlat[1] + ')';
+            
+            $http({
+                method: 'GET',
+                url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_identify.php',
+                params: {'mbl_coords': point},
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(function successCallback(response) {
+
+                $state.go('app.identify',
+                        {
+                            list: angular.toJson(response.data)
+                        }
+                );
+
+            }, function errorCallback(response) {
+
+                $ionicPopup.alert({
+                    title: 'Falla de acceso!',
+                    template: 'Error de comunicacion, revise su conexion'
+                });
+            });
         });
     };
 
@@ -237,15 +280,14 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     if ($stateParams.placa != undefined && $stateParams.placa != "") {
 
         $http({
-            method: 'GET',
-            url: 'http://192.168.0.10/finderaccount/Services/sgm_service_placa.php',
+            method: 'GET', //sgm_service_point.php
+            url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_placa.php',
             params: {'placa': $stateParams.placa},
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(function successCallback(response) {
 
-//            console.log(response.data[0]);
             wkt = response.data[0].coordenadas;
             var format = new ol.format.WKT();
             var feature = format.readFeature(wkt, {
@@ -278,49 +320,23 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 })
             });
             var extent = feature.getGeometry().getExtent();
-//            console.log(extent);
+            
             instanciarMapa();
 
             map.getView().fit(extent, map.getSize());
-            map.on('dblclick', function (evt) {
-                console.log('doubled');
-                var feature = map.forEachFeatureAtPixel(evt.pixel,
-                        function (feature, layer) {
-
-                            // si entra aqui es por que tiene datos para mostrar
-                            console.log('emtro');
-                            console.log(response.data[0].area_hec);
-                            $state.go('app.playlist',
-                                    {
-                                        area_hec: response.data[0].area_hec,
-                                        estado_juridico: response.data[0].estado_juridico,
-                                        fecha_radica_inscribe: response.data[0].fecha_radica_inscribe,
-                                        minerales: response.data[0].minerales,
-                                        modalidad: response.data[0].modalidad,
-                                        municipios: response.data[0].municipios,
-                                        personas: response.data[0].personas,
-                                        placa: response.data[0].placa,
-                                        tipo_expediente: response.data[0].tipo_expediente
-                                    }
-                            ,
-                                    {
-                                        reload: true
-                                    }
-                            );
-                        });
-            });
-
-
             reinsertarMapa();
         }, function errorCallback(response) {
 
-            alert('Error de comunicacion, consulte su WebMaster');
+            $ionicPopup.alert({
+                title: 'Falla de acceso!',
+                template: 'Error de comunicacion, revise su conexion'
+            });
         });
     } else if ($stateParams.zona != '0' && $stateParams.radio != undefined && $stateParams.radio != "" && $stateParams.coorX != undefined && $stateParams.coorX != "" && $stateParams.coorY != undefined && $stateParams.coorY != "") {
 
         $http({
             method: 'GET',
-            url: 'http://192.168.0.10/finderaccount/Services/sgm_service_point.php',
+            url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_point.php',
             params: {'mbl_coords': 'point(' + $stateParams.coorX + ' ' + $stateParams.coorY + ')', 'mbl_origen': String($stateParams.zona)},
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -371,7 +387,10 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
         }, function errorCallback(response) {
 
-            alert('Error de comunicacion, consulte su WebMaster');
+            $ionicPopup.alert({
+                title: 'Falla de acceso!',
+                template: 'Error de comunicacion, revise su conexion'
+            });
         });
 
 

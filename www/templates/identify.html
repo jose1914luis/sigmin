@@ -1,0 +1,12 @@
+<ion-view view-title="Identify">
+
+
+
+    <ion-content>        
+        <ion-list>
+            <ion-item ng-repeat="item in items track by $index" ng-click="showData(item)">
+                {{item}}
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,52 @@
+<ion-view cache-view="false"  view-title="Propiedades Mineras">
+
+    <ion-content>
+        <!--<ion-list>      
+          <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
+            {{playlist.title}}</ion-item>
+        </ion-list>
+
+        <h1>MAPA</h1>
+        <button class="button">
+            Default
+        </button>-->
+
+
+        <div id="map" data-tap-disabled="true">
+            <div id="gmap"data-tap-disabled="true" >                
+            </div>
+            <div id="olmap"data-tap-disabled="true" >                
+            </div>
+        </div>
+
+
+        <button id="boton_centro" class="button button-float" ng-click="mostrarMenu()">
+            <i ng-class="centroIcono"></i>
+        </button>
+
+        <button ng-show="mostrar2" id="boton_1" class="button button-float" ng-click="mostrarExp()">
+            <i class="icon ion-ribbon-b"></i>
+        </button>
+
+        <button ng-show="mostrar2" id="boton_2" class="button button-float" ng-click="buscar()" >
+            <i class="icon ion-ios-search-strong"></i>
+        </button>
+
+        <button ng-show="mostrar" id="boton_3" class="button button-float " ng-click="mostrarFinder()">    
+            <i ng-class="icono_3" ></i>
+        </button>
+
+        <button ng-show="mostrar" id="boton_4" class="button button-float " ng-click="clickBoton_4()">
+            <i ng-class="icono_4"></i>
+        </button>
+
+        <button ng-show="mostrar" id="boton_5" class="button button-float " ng-click="cambiarMapa()">
+            <i ng-class="icono_5"></i>
+        </button>
+
+        <div class="menu_abajo">
+
+        </div>
+
+    </ion-content>
+</ion-view>
