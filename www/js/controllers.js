@@ -146,7 +146,7 @@ angular.module('starter.controllers', [])
                 if (dato != '') {
 
 
-                    $http({
+z                    $http({
                         method: 'GET',
                         url: 'http://www.sigmin.co//finder/viewValidaQuery.php',
                         params: {'term': dato},
