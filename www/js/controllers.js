@@ -8,39 +8,39 @@ angular.module('starter.controllers', [])
             });
             $scope.doLogin = function () {
 
-                $state.go('app.playlists');
-//                var fecha = $filter('date')(new Date(), 'yyyyMMdd');
-//                var code = md5(fecha + '-' + $scope.loginData.username + '-' + md5($scope.loginData.password));
-//                var respuesta = md5(md5($scope.loginData.password) + '-' + fecha + '-' + $scope.loginData.username);
-//
-//                $http({
-//                    method: 'GET',
-//                    url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_user.php',
-//                    params: {'login_user': $scope.loginData.username, verification_code: code},
-//                    headers: {
-//                        'Content-Type': 'application/x-www-form-urlencoded'
-//                    }
-//                }).then(function successCallback(response) {
-//
-//                    if (response.data.estado_acceso == respuesta) {
-//
-//                        $state.go('app.playlists');
-//
-//                    } else {
-//
-//                        $ionicPopup.alert({
-//                            title: 'Falla de acceso!',
-//                            template: 'Por favor revisa tus credenciales!'
-//                        });
-//                    }
-//
-//                }, function errorCallback(response) {
-//
-//                    $ionicPopup.alert({
-//                        title: 'Falla de acceso!',
-//                        template: 'Error de comunicacion, revise su conexion'
-//                    });
-//                });
+//                $state.go('app.playlists');
+                var fecha = $filter('date')(new Date(), 'yyyyMMdd');
+                var code = md5(fecha + '-' + $scope.loginData.username + '-' + md5($scope.loginData.password));
+                var respuesta = md5(md5($scope.loginData.password) + '-' + fecha + '-' + $scope.loginData.username);
+
+                $http({
+                    method: 'GET',
+                    url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_user.php',
+                    params: {'login_user': $scope.loginData.username, verification_code: code},
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }).then(function successCallback(response) {
+
+                    if (response.data.estado_acceso == respuesta) {
+
+                        $state.go('app.playlists');
+
+                    } else {
+
+                        $ionicPopup.alert({
+                            title: 'Falla de acceso!',
+                            template: 'Por favor revisa tus credenciales!'
+                        });
+                    }
+
+                }, function errorCallback(response) {
+
+                    $ionicPopup.alert({
+                        title: 'Falla de acceso!',
+                        template: 'Error de comunicacion, revise su conexion'
+                    });
+                });
             };
 
 
@@ -145,8 +145,7 @@ angular.module('starter.controllers', [])
                 $scope.items = [];
                 if (dato != '') {
 
-
-z                    $http({
+                    $http({
                         method: 'GET',
                         url: 'http://www.sigmin.co//finder/viewValidaQuery.php',
                         params: {'term': dato},
@@ -155,6 +154,7 @@ z                    $http({
                         }
                     }).then(function successCallback(response) {
 
+//                        console.log(response);
                         var obj = response.data;
                         var log = [];
                         $scope.items.length = 0;

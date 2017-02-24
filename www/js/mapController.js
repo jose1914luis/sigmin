@@ -20,7 +20,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     var draw = null;
     var wkt = 'MULTIPOLYGON EMPTY';
     var map = null;
-    
+
     $route.reload();
     $templateCache.removeAll();
 
@@ -221,7 +221,9 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         maxZoom: 21
     });
     view.on('change:center', function () {
+        
         var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+        console.log(center[1] + '---' + center[0]);
         gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
     });
     view.on('change:resolution', function () {
@@ -236,7 +238,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     var instanciarMapa = function () {
         map = new ol.Map({
             layers: [vector, vectorDibujo, vectorPunto],
-            interactions: ol.interaction.defaults({doubleClickZoom: false}),
+            interactions: ol.interaction.defaults({doubleClickZoom: false, DragRotate: false, DragRotateAndZoom: false}),
             target: olMapDiv,
             view: view
         });
@@ -245,7 +247,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
             var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
             var point = 'point(' + lonlat[0] + ' ' + lonlat[1] + ')';
-            
+
             $http({
                 method: 'GET',
                 url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_identify.php',
@@ -320,7 +322,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 })
             });
             var extent = feature.getGeometry().getExtent();
-            
+
             instanciarMapa();
 
             map.getView().fit(extent, map.getSize());
