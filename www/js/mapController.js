@@ -25,15 +25,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     $templateCache.removeAll();
 
     var source = new ol.source.Vector();
-    var gmap = new google.maps.Map(document.getElementById('gmap'), {
-        disableDefaultUI: true,
-        keyboardShortcuts: false,
-        draggable: true,
-        disableDoubleClickZoom: false,
-        scrollwheel: true,
-        streetViewControl: false,
-        mapTypeId: google.maps.MapTypeId.SATELLITE
-    });
+    var gmap;
 
     var iniciarBotones = function () {
         $scope.icono_5 = 'icon ion-map';
@@ -221,7 +213,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
         maxZoom: 21
     });
     view.on('change:center', function () {
-        
+
         var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
         console.log(center[1] + '---' + center[0]);
         gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
@@ -236,6 +228,17 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     var vectorPunto = new ol.layer.Vector();
 
     var instanciarMapa = function () {
+
+        gmap = new google.maps.Map(document.getElementById('gmap'), {
+            disableDefaultUI: true,
+            keyboardShortcuts: false,
+            draggable: true,
+            disableDoubleClickZoom: false,
+            scrollwheel: true,
+            streetViewControl: false,
+            mapTypeId: google.maps.MapTypeId.SATELLITE
+        });
+
         map = new ol.Map({
             layers: [vector, vectorDibujo, vectorPunto],
             interactions: ol.interaction.defaults({doubleClickZoom: false, DragRotate: false, DragRotateAndZoom: false}),
@@ -322,11 +325,14 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 })
             });
             var extent = feature.getGeometry().getExtent();
-
+//            $ionicHistory.clearCache();
+//            $ionicHistory.nextViewOptions({
+//                disableBack: true
+//            });
             instanciarMapa();
-
             map.getView().fit(extent, map.getSize());
             reinsertarMapa();
+
         }, function errorCallback(response) {
 
             $ionicPopup.alert({
