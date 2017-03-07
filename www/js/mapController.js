@@ -21,9 +21,6 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     var wkt = 'MULTIPOLYGON EMPTY';
     var map = null;
 
-    $route.reload();
-    $templateCache.removeAll();
-
     var source = new ol.source.Vector();
     var gmap;
 
@@ -215,7 +212,6 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     view.on('change:center', function () {
 
         var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
-        console.log(center[1] + '---' + center[0]);
         gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
     });
     view.on('change:resolution', function () {
@@ -284,6 +280,12 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
     if ($stateParams.placa != undefined && $stateParams.placa != "") {
 
+//        $route.reload();
+//        $templateCache.removeAll();
+//        $ionicHistory.clearCache();
+//        $state.go('app.playlists', {placa: placa[0]}, {reload: true});
+
+
         $http({
             method: 'GET', //sgm_service_point.php
             url: 'http://www.sigmin.co/finderaccount/Services/sgm_service_placa.php',
@@ -325,13 +327,15 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
                 })
             });
             var extent = feature.getGeometry().getExtent();
-//            $ionicHistory.clearCache();
-//            $ionicHistory.nextViewOptions({
-//                disableBack: true
-//            });
             instanciarMapa();
             map.getView().fit(extent, map.getSize());
             reinsertarMapa();
+
+//            if ($stateParams.menu != undefined && $stateParams.menu != "") {
+//                menu = $stateParams.menu;
+//                $scope.cambiarMapa();
+//            }
+
 
         }, function errorCallback(response) {
 

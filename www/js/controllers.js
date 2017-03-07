@@ -80,7 +80,7 @@ angular.module('starter.controllers', [])
                     }
                 }
             };
-           
+
 
             for (var i = 0; i < con - 1; i++) {
 
@@ -125,42 +125,51 @@ angular.module('starter.controllers', [])
             };
         })
 
-        .controller('BrowserCtrl', function ($scope, $http, $window, $state, $ionicHistory, $ionicPopup) {
+        .controller('BrowserCtrl', function ($scope, $http, $window, $state, $ionicHistory, $ionicPopup, $ionicLoading) {
 
-
+            $scope.cargar = false;
             $scope.inputVal = '';
             $scope.items = [];
             $scope.cargarCoor = function (item) {
 
-                $ionicHistory.clearCache();
+                var placa = item.split(' | ');
+
                 $ionicHistory.nextViewOptions({
                     disableBack: true
                 });
-                $state.go('app.playlists', {placa: item}, {reload: true});
-
+                $ionicHistory.clearCache().then(function () {
+                    $state.go('app.playlists', {placa: placa[0]}, {reload: true});
+                });
             };
+
             $scope.buscar = function (dato) {
 
                 $scope.items.length = 0;
                 $scope.items = [];
-                if (dato != '') {
+
+                if (dato != '' && dato.length > 2) {
+
+                    $scope.cargar = true;
 
                     $http({
                         method: 'GET',
-                        url: 'http://www.sigmin.co//finder/viewValidaQuery.php',
-                        params: {'term': dato},
+                        url: 'http://sigmin.co/Services/sgm_service_multicriterio_mobile.php',
+                        params: {'multicriterio': dato},
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     }).then(function successCallback(response) {
 
-//                        console.log(response);
+                        $scope.cargar = false;
                         var obj = response.data;
-                        var log = [];
-                        $scope.items.length = 0;
                         angular.forEach(obj, function (value, key) {
 
-                            $scope.items.push(value.value);
+                            var obj2 = value;
+                            var tipo = (key == 'solicitudes') ? 'Sol' : 'Til';
+
+                            angular.forEach(obj2, function (value, key) {
+                                $scope.items.push(value.placa + ' | ' + tipo + ' | ' + value.municipios.charAt(0).toUpperCase() + value.municipios.substr(1, value.municipios.length).toLowerCase());
+                            });
                         });
                     }, function errorCallback(response) {
 

@@ -6,9 +6,14 @@
         <div class="bar bar-header item-input-inset">
             <label class="item-input-wrapper">
                 <i class="icon ion-ios-search placeholder-icon"></i>
-                <input type="search" placeholder="Search" ng-model="inputVal" ng-keyup="buscar(inputVal)">
+                <input type="search" placeholder="Search" ng-model="inputVal"  ng-model-options='{ debounce: 1000 }' ng-change="buscar(inputVal)">
             </label>         
         </div>
+        <div ng-show="cargar" style="text-align: center">
+            <ion-spinner icon="lines"></ion-spinner>
+        </div>
+        
+        
         <ion-list>
             <ion-item ng-repeat="item in items track by $index" ng-click="cargarCoor(item)">
                 {{item}}
