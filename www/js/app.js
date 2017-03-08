@@ -82,7 +82,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
                             }
                         }
                     })
-
+                    
+                    .state('app.cuenta', {
+                        url: '/cuenta',
+                        views: {
+                            'menuContent': {
+                                templateUrl: 'templates/cuenta.html',
+                                controller: 'cuentaCtrl'
+                            }
+                        }
+                    })
 
                     .state('app.playlist', {
                         url: '/playlist?area_hec&estado_juridico&fecha_radica_inscribe&minerales&modalidad&municipios&personas&placa&tipo_expediente&',

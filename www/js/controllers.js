@@ -3,12 +3,17 @@ angular.module('starter.controllers', [])
         .controller('AppCtrl', function ($scope, $http, $filter, $ionicModal, $ionicPopup, $timeout, $state, $ionicHistory) {
 
             $scope.loginData = {};
-            $ionicHistory.nextViewOptions({
-                disableBack: true
-            });
-            $scope.doLogin = function () {
 
-//                $state.go('app.playlists');
+
+            $scope.crearCuenta = function () {
+
+                $state.go('app.cuenta');
+            };
+
+            $scope.doLogin = function () {
+                $ionicHistory.nextViewOptions({
+                    disableBack: true
+                });
                 var fecha = $filter('date')(new Date(), 'yyyyMMdd');
                 var code = md5(fecha + '-' + $scope.loginData.username + '-' + md5($scope.loginData.password));
                 var respuesta = md5(md5($scope.loginData.password) + '-' + fecha + '-' + $scope.loginData.username);
@@ -44,6 +49,14 @@ angular.module('starter.controllers', [])
             };
 
 
+        })
+
+        .controller('cuentaCtrl', function ($scope, $http, $filter, $ionicModal, $ionicPopup, $timeout, $state, $ionicHistory) {
+
+            $scope.crearCuenta = function () {
+
+                $state.go('app.cuenta');
+            };
         })
 
         .controller('identifyCtrl', function ($scope, $state, $stateParams) {
