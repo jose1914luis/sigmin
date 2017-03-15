@@ -5,7 +5,17 @@
  */
 /* global google, ol, map, service */
 
-angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $ionicHistory, $scope, $location, $state, $stateParams, $route, $templateCache, $http, $ionicPopup) {
+angular.module('starter.controllers').controller('MapCtrl', function ($rootScope, $ionicHistory, $scope, $state, $stateParams, $http, $ionicPopup) {
+
+    $rootScope.mn_salir = true;
+    $rootScope.salir = function () {
+
+        $ionicHistory.clearCache();
+        $ionicHistory.nextViewOptions({
+            disableBack: true
+        });
+        $state.go('app.login', {reload: true});
+    };
 
     var state = 'INIT';
 

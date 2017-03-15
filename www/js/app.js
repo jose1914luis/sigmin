@@ -4,6 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
+//var mn_salir = false;
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnimate', 'ngRoute'])
 
         .run(function ($ionicPlatform) {
@@ -50,18 +51,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
                             }
                         }
                     })
-                    
-//                    .state('app.modal', {
-//                        url: '/modal',
-//                        views: {
-//                            'menuContent': {
-//                                templateUrl: 'templates/modal.html',
-//                                controller: 'modalCtrl'
-//                            }
-//                        }
-//                    })
-                    
-                    
+
                     .state('app.identify', {
                         url: '/identify?list',
                         views: {
@@ -86,6 +76,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
 
                     .state('app.login', {
                         url: '/login',
+                        cache: false,
                         views: {
                             'menuContent': {
                                 templateUrl: 'templates/login.html',
@@ -93,7 +84,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
                             }
                         }
                     })
-                    
+
                     .state('app.cuenta', {
                         url: '/cuenta',
                         views: {

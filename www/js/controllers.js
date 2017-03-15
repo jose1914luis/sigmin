@@ -1,14 +1,9 @@
 angular.module('starter.controllers', [])
 
-        .controller('AppCtrl', function ($scope, $http, $filter, $ionicPopup, $state, $ionicHistory, $ionicSideMenuDelegate) {
+        .controller('AppCtrl', function ($rootScope, $scope, $http, $filter, $ionicPopup, $state, $ionicHistory, $ionicSideMenuDelegate) {           
 
-//            $scope.$on('$ionicView.enter', function () {
-//                $ionicSideMenuDelegate.canDragContent(false);
-//            });
-//            $scope.$on('$ionicView.leave', function () {
-//                $ionicSideMenuDelegate.canDragContent(true);
-//            });
-
+            $rootScope.mn_salir = false;                        
+                    
             $scope.loginData = {};
 
 
@@ -66,7 +61,7 @@ angular.module('starter.controllers', [])
             $scope.crear.nombre = '';
             $scope.cargar = false;
 
-            focus = function (id) {                
+            focus = function (id) {
                 $timeout(function () {
                     var element = $window.document.getElementById(id);
                     if (element)
@@ -78,18 +73,18 @@ angular.module('starter.controllers', [])
                 scope: $scope,
                 animation: 'slide-in-up'
             }).then(function (modal) {
-                $scope.modal = modal;                    
+                $scope.modal = modal;
             });
-            
-            $scope.openModal  = function (){
+
+            $scope.openModal = function () {
                 $scope.modal.show();
             };
 
-            $scope.crearCuenta = function () {                
+            $scope.crearCuenta = function () {
 
                 if (validarDatos()) {
                     $scope.cargar = true;
-                    
+
                     $http({
                         method: 'GET',
                         url: 'http://sigmin.co/Services/sgm_service_crear_cuenta.php',
@@ -100,13 +95,13 @@ angular.module('starter.controllers', [])
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     }).then(function successCallback(response) {
-                        
+
                         $scope.cargar = false;
                         var resp = String(response.data).trim();
 
                         if (resp == "1") {
 
-                            $scope.openModal();                           
+                            $scope.openModal();
 
                         } else {
 

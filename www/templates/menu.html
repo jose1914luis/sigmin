@@ -26,16 +26,16 @@
         </ion-item>
         <ion-item menu-close href="#/app/browse">
           Mis expedientes
+        </ion-item>
+        <ion-item menu-close href="#/app/playlist">
+          About us
         </ion-item>-->                  
-        <ion-item menu-close href="#/app/login">
+        <ion-item ng-show="mn_salir" menu-close ng-click="salir()">
           Logout
         </ion-item>
         <ion-item menu-close href="#/app/playlists">
               <a href="http://www.sigmin.com/" target="_blank">Suscripciones</a>
-        </ion-item>
-        <ion-item menu-close href="#/app/playlist">
-          About us
-        </ion-item>
+        </ion-item>        
       </ion-list>
     </ion-content>
   </ion-side-menu>
