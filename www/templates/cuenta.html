@@ -3,33 +3,55 @@
         <h1 class="title">Login</h1>    
     </ion-header-bar>
     <ion-content>
-        <form ng-submit="crearCuenta()">
+        <form >
             <div class="list">
                 <label class="item item-input">
                     <span class="input-label">N° Documento</span>
-                    <input type="text" ng-model="crear.doc">
+                    <input type="text" id="doc" ng-model="crear.doc">
                 </label>
                 <label class="item item-input">
                     <span class="input-label">Nombre</span>
-                    <input type="text" ng-model="crear.nombre">
+                    <input type="text" id="nombre" ng-model="crear.nombre">
                 </label>
                 <label class="item item-input">
                     <span class="input-label">Email</span>
-                    <input type="text" ng-model="crear.email">
+                    <input type="text" id="email" ng-model="crear.email">
                 </label>                
                 <label class="item item-input">
                     <span class="input-label">Contraseña</span>
-                    <input type="password" ng-model="crear.password1">
+                    <input type="password" id="password1" ng-model="crear.pass1" >
                 </label>
-                
+
                 <label class="item item-input">
                     <span class="input-label">Repita Contraseña</span>
-                    <input type="password" ng-model="crear.password2">
+                    <input type="password" id="password2" ng-model="crear.pass2">
                 </label>
+                <div ng-show="cargar" style="text-align: center">
+                    <ion-spinner icon="lines"></ion-spinner>
+                </div>
+
                 <label class="item">
-                    <button class="button button-block button-positive" type="submit">Crear cuenta</button>
-                </label>
+                    <button class="button button-block button-positive" type="button" ng-click="modal.show();">Crear cuenta</button>
+                </label>                                
             </div>
+            <script id="templates/modal.html" type="text/ng-template">
+                <ion-modal-view ng-controller="modalCtrl">
+                <ion-header-bar>
+                <h1 class="title">Cuenta creada</h1>
+                </ion-header-bar>
+                <ion-content>
+                <div style="margin: 0 10px 0px 10px;text-align: center;">
+                <br>      
+                <h4>Felicitaciones!</h4><br>
+                <p>Tu usuario ha sido creado satisfactoriamente. Ahora necesitas activar tu cuenta, 
+                verifica tu correo electronico {{crear.email}} y sigue los pasos para acceder a SIGMIN. Luego ingresa nuevamente a la aplicación.</p>
+
+                <button class="button button-block button-positive" ng-click="salir()">OK</button>
+                </div>
+                </ion-content>       
+                </ion-modal-view>
+            </script>
+
         </form>
     </ion-content>
 </ion-view>

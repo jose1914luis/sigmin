@@ -51,6 +51,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
                         }
                     })
                     
+//                    .state('app.modal', {
+//                        url: '/modal',
+//                        views: {
+//                            'menuContent': {
+//                                templateUrl: 'templates/modal.html',
+//                                controller: 'modalCtrl'
+//                            }
+//                        }
+//                    })
+                    
+                    
                     .state('app.identify', {
                         url: '/identify?list',
                         views: {
