@@ -88,7 +88,6 @@ angular.module('starter.controllers', [])
             $scope.crearCuenta = function () {                
 
                 if (validarDatos()) {
-
                     $scope.cargar = true;
                     
                     $http({
