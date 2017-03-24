@@ -247,7 +247,7 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
 
         map = new ol.Map({
             layers: [vector, vectorDibujo, vectorPunto],
-            interactions: ol.interaction.defaults({doubleClickZoom: false, DragRotate: false, DragRotateAndZoom: false}),
+            interactions: ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}),
             target: olMapDiv,
             view: view
         });
@@ -289,11 +289,6 @@ angular.module('starter.controllers').controller('MapCtrl', function ($rootScope
     };
 
     if ($stateParams.placa != undefined && $stateParams.placa != "") {
-
-//        $route.reload();
-//        $templateCache.removeAll();
-//        $ionicHistory.clearCache();
-//        $state.go('app.playlists', {placa: placa[0]}, {reload: true});
 
 
         $http({

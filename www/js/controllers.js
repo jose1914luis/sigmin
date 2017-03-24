@@ -176,9 +176,6 @@ angular.module('starter.controllers', [])
                     return false;
                 }
 //
-//                console.log($scope.crear.pass1);
-//                console.log($scope.crear.pass2);
-                // validacion de contrase�as: igualdad de caracteres entre contrase�a1 y contrase�a2
                 if (String($scope.crear.pass1) != String($scope.crear.pass2)) {
                     $ionicPopup.alert({
                         title: 'Alerta!',
@@ -275,11 +272,6 @@ angular.module('starter.controllers', [])
             });
             $scope.ubicarCoor = function (coorX, coorY, radio, zona) {
 
-
-                $ionicHistory.clearCache();
-                $ionicHistory.nextViewOptions({
-                    disableBack: true
-                });
                 $state.go('app.playlists', {coorX: coorX, coorY: coorY, radio: radio, placa: '', zona: zona}, {reload: true});
             };
         })
@@ -293,9 +285,6 @@ angular.module('starter.controllers', [])
 
                 var placa = item.split(' | ');
 
-                $ionicHistory.nextViewOptions({
-                    disableBack: true
-                });
                 $ionicHistory.clearCache().then(function () {
                     $state.go('app.playlists', {placa: placa[0]}, {reload: true});
                 });
