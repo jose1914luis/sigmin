@@ -1,0 +1,22 @@
+<ion-view view-title="Creditos" name="creditos-view">
+    <ion-header-bar>
+        <h1 class="title">Creditos</h1>    
+    </ion-header-bar>
+    <ion-content>
+        <form>            
+            <div style="margin: 0 10px 0px 10px;text-align: center;">
+                <br>   
+                <h4><strong>Créditos de Sigmin</strong></h4>
+                <i class="icon ion-social-usd"></i> {{creditos.sigcoins}} <br>
+                
+                <p ng-show="mostrar">No tines créditos ingresa a tu cuenta de Sigmin y realiza una recarga: <a  href="http://www.sigmin.co/finderaccount/" target="_blank">www.sigmin.com</a>
+                </p>
+                
+                <p ng-show="!mostrar">Para visualizar y consultar el mapa debes consumir un crédito:
+                </p>
+
+                <button  ng-show="!mostrar" class="button button-balanced" ng-click="consumirCreditos()">Consumir $1 Crédito</button>
+            </div> 
+        </form>
+    </ion-content>
+</ion-view>

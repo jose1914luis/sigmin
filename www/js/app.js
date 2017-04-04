@@ -94,6 +94,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
                             }
                         }
                     })
+                    
+                    .state('app.creditos', {
+                        url: '/creditos',
+                        views: {
+                            'menuContent': {
+                                templateUrl: 'templates/creditos.html',
+                                controller: 'creditosCtrl'
+                            }
+                        }
+                    })
 
                     .state('app.playlist', {
                         url: '/playlist?area_hec&estado_juridico&fecha_radica_inscribe&minerales&modalidad&municipios&personas&placa&tipo_expediente&',

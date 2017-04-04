@@ -1,9 +1,79 @@
 angular.module('starter.controllers', [])
+        .controller('creditosCtrl', function ($scope, $http, $ionicPopup, $state, $ionicHistory) {
 
-        .controller('AppCtrl', function ($rootScope, $scope, $http, $filter, $ionicPopup, $state, $ionicHistory, $ionicSideMenuDelegate) {           
+            $scope.creditos = {};
+            $scope.creditos.sigcoins = 0;
+            $scope.mostrar = false;
 
-            $rootScope.mn_salir = false;                        
-                    
+            var ServiceCreditos = function (operacion) {
+
+                $http({
+                    method: 'GET',
+                    url: 'http://sigmin.co/Services/sgm_service_creditos.php',
+                    params: {'operacion': operacion, 'login': "jvelasquez"},
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }).then(function successCallback(response) {
+
+
+                    if (response != 0) {
+
+                        if (operacion == "consulta") {
+
+                            var creditos = response.data.credito;
+                            $scope.creditos.sigcoins = creditos;
+                            if (creditos == '0') {
+                                $scope.mostrar = true;
+                            }
+                        } else if (operacion == "consumir") {
+
+                            var resp = String(response.data).trim();
+                            if (resp == "OK") {
+
+                                $ionicHistory.nextViewOptions({
+                                    disableBack: true
+                                });
+
+                                $state.go('app.playlists');
+                            } else {
+                                $ionicPopup.alert({
+                                    title: 'Falla de acceso!',
+                                    template: 'Error de comunicacion, revise su conexion'
+                                });
+                            }
+                        }
+
+
+                    } else {
+
+                        $ionicPopup.alert({
+                            title: 'Falla de acceso!',
+                            template: 'Error de comunicacion, revise su conexion'
+                        });
+                    }
+
+                }, function errorCallback(e) {
+
+                    $ionicPopup.alert({
+                        title: 'Falla de acceso!',
+                        template: 'Error de comunicacion, revise su conexion'
+                    });
+                });
+            };
+
+            ServiceCreditos("consulta");
+            $scope.consumirCreditos = function () {
+
+                ServiceCreditos("consumir");
+            };
+
+
+        })
+        .controller('AppCtrl', function ($rootScope, $scope, $http, $filter, $ionicPopup, $state, $ionicHistory) {
+
+            $rootScope.mn_salir = false;
+
             $scope.loginData = {};
 
 
@@ -31,7 +101,7 @@ angular.module('starter.controllers', [])
 
                     if (response.data.estado_acceso == respuesta) {
 
-                        $state.go('app.playlists');
+                        $state.go('app.creditos');
 
                     } else {
 
