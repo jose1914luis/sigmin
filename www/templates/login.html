@@ -4,7 +4,12 @@
     </ion-header-bar>
     <ion-content>
         <form ng-submit="doLogin()">
-            <div class="list">
+            <div class="list list-inset">
+                <div style="text-align: center">
+                    <img src="img/logo_1.png" alt="SIGMIN"/>
+                    <h2>SIGMIN</h2>
+                </div>                
+
                 <label class="item item-input">
                     <span class="input-label">Usuario: </span>
                     <input type="text" ng-model="loginData.username">
@@ -12,15 +17,15 @@
                 <label class="item item-input">
                     <span class="input-label">Contraseña: </span>
                     <input type="password" ng-model="loginData.password">
-                </label>
+                </label>  
                 <label class="item">
-                    <button class="button button-block button-positive" type="submit">Entrar</button>
+                    <button class="button button-block button-positive" type="submit">Entrar</button>                
                 </label>
-                
-                <label class="item">
-                    <button class="button button-block button-assertive" type="button" ng-click="crearCuenta()">Crear cuenta</button>
-                </label>
+            </div>      
+            <div style="text-align: center">
+                <a href="" ng-click="crearCuenta()">No tengo cuenta en Sigmin</a>    
             </div>
+
         </form>
     </ion-content>
 </ion-view>
