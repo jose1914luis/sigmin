@@ -96,7 +96,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngAnima
                     })
                     
                     .state('app.creditos', {
-                        url: '/creditos',
+                        url: '/creditos?tiempo',
                         views: {
                             'menuContent': {
                                 templateUrl: 'templates/creditos.html',

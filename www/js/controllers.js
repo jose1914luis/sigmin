@@ -1,5 +1,17 @@
 angular.module('starter.controllers', [])
-        .controller('creditosCtrl', function ($scope, $http, $ionicPopup, $state, $ionicHistory) {
+        .controller('creditosCtrl', function ($stateParams, $scope, $http, $ionicPopup, $state, $ionicHistory) {
+
+            $scope.hidden2 = 'hidden';
+            $scope.none = 'none';
+            if ($stateParams.tiempo != undefined && $stateParams.tiempo != "") {
+
+                if ($stateParams.tiempo == 'true') {
+                    $scope.hidden2 = 'visible';
+                    $scope.none = 'block';
+                }
+            }
+
+            $scope.hidden = 'hidden';
 
             $scope.creditos = {};
             $scope.creditos.sigcoins = 0;
@@ -25,17 +37,21 @@ angular.module('starter.controllers', [])
                             $scope.creditos.sigcoins = creditos;
                             if (creditos == '0') {
                                 $scope.mostrar = true;
+                                $scope.hidden = 'display';
                             }
                         } else if (operacion == "consumir") {
 
                             var resp = String(response.data).trim();
                             if (resp == "OK") {
-
+                                
                                 $ionicHistory.nextViewOptions({
                                     disableBack: true
                                 });
-
-                                $state.go('app.playlists');
+                                
+                                $ionicHistory.clearCache().then(function () {
+                                    localStorage.setItem('exp', parseInt((new Date().getTime() / (1000 * 60))));
+                                    $state.go('app.playlists', {reload: true});
+                                });
                             } else {
                                 $ionicPopup.alert({
                                     title: 'Falla de acceso!',
@@ -78,7 +94,6 @@ angular.module('starter.controllers', [])
 
 
             $scope.crearCuenta = function () {
-
                 $state.go('app.cuenta');
             };
 
@@ -101,6 +116,7 @@ angular.module('starter.controllers', [])
 
                     if (response.data.estado_acceso == respuesta) {
 
+                        $rootScope.mn_salir = true;
                         $state.go('app.creditos');
 
                     } else {
@@ -346,7 +362,7 @@ angular.module('starter.controllers', [])
             };
         })
 
-        .controller('BrowserCtrl', function ($scope, $http, $state, $ionicHistory, $ionicPopup) {
+        .controller('BrowserCtrl', function ($scope, $http, $state, $ionicHistory, $ionicPopup, $rootScope) {
 
             $scope.cargar = false;
             $scope.inputVal = '';
@@ -365,7 +381,7 @@ angular.module('starter.controllers', [])
                 $scope.items.length = 0;
                 $scope.items = [];
 
-                if (dato != '' && dato.length > 2) {
+                if (dato != '' && dato.length > 15) {
 
                     $scope.cargar = true;
 
@@ -378,6 +394,24 @@ angular.module('starter.controllers', [])
                         }
                     }).then(function successCallback(response) {
 
+                        /*Validar el tiempo que lleva abierta la aplicacion*/
+                        $ionicHistory.nextViewOptions({
+                            disableBack: true
+                        });
+
+                        var newtime = parseInt((new Date().getTime() / (1000 * 60)))
+                        var oldtime = localStorage.getItem('exp');
+                        if (oldtime == null) {
+
+                            $state.go('app.login', {tiempo: true});
+                        }
+                        var oldtime = parseInt(localStorage.getItem('exp'));
+                        if ((newtime - oldtime) > 15) {
+
+                            $state.go('app.creditos', {tiempo: true});
+                        }
+                        /***************************************************/
+
                         $scope.cargar = false;
                         var obj = response.data;
                         angular.forEach(obj, function (value, key) {
@@ -389,6 +423,7 @@ angular.module('starter.controllers', [])
                                 $scope.items.push(value.placa + ' | ' + tipo + ' | ' + value.municipios.charAt(0).toUpperCase() + value.municipios.substr(1, value.municipios.length).toLowerCase());
                             });
                         });
+
                     }, function errorCallback(e) {
 
                         $ionicPopup.alert({
